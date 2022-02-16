@@ -1,0 +1,44 @@
+name: Terraform Plan Workflow
+
+on:
+  workflow_call:
+    inputs:
+      arm_subscription_id:
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+
+jobs:
+  plan:
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1.2.1
+
+      # - name: Azure Login
+      #   uses: Azure/login@v1.1
+      #   with:
+      #     allow-no-subscriptions: true
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # - name: Terraform Init
+      #   run: terraform -chdir='${{ inputs.tf_dir }}' init -backend-config="subscription_id=${{ inputs.tf_backend_subscription_id }}" -backend-config="resource_group_name=${{ inputs.tf_backend_resource_group }}" -backend-config="storage_account_name=${{ inputs.tf_backend_storage_account }}" -backend-config="container_name=${{ env.tf_backend_container }}" -backend-config="key=${{ inputs.tf_backend_key }}"
+
+      # - name: Terraform Plan
+      #   run: terraform -chdir='${{ inputs.tf_dir }}' plan ${{ inputs.tf_options_plan }} -out=./tfplan.binary
+
+      # - name: Azure Logout & Cleanup
+      #   uses: azure/CLI@v1
+      #   with:
+      #     azcliversion: 2.0.72
+      #     inlineScript: |
+      #       az logout
+      #       az cache purge
+      #       az account clear
